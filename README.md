@@ -119,7 +119,7 @@ The following tables provide estimated monthly costs for different traffic level
 | EFS Storage | $5-10 | $5-10 | $3-5 |
 | Load Balancer | $16-20 | $16-20 | $16-20 |
 | CloudWatch | $5-10 | $5-10 | $5-10 |
-| **Total** | **$0** | **$0** | **$0** |
+| **Total** | **$166-240** | **$131-210** | **$109-170** |
 | **Squid Cloud Cost** | **$500-700** | **$500-700** | **$500-700** |
 | **Savings** | **60-70%** | **70-80%** | **75-85%** |
 
@@ -133,7 +133,7 @@ The following tables provide estimated monthly costs for different traffic level
 | EFS Storage | $10-20 | $10-20 | $5-10 |
 | Load Balancer | $16-20 | $16-20 | $16-20 |
 | CloudWatch | $15-25 | $15-25 | $15-25 |
-| **Total** | **$0** | **$0** | **$0** |
+| **Total** | **$421-615** | **$341-515** | **$266-395** |
 | **Squid Cloud Cost** | **$1,500-2,000** | **$1,500-2,000** | **$1,500-2,000** |
 | **Savings** | **70-80%** | **75-85%** | **80-90%** |
 

@@ -1,0 +1,21 @@
+version: 0.1
+resource_usage:
+  aws_ecs_service.subsquid:
+    monthly_requests: 7500000
+    request_duration_ms: 250
+  
+  aws_db_instance.subsquid[0]:
+    storage_gb: 100
+    monthly_standard_io_requests: 10000000
+  
+  aws_rds_cluster.subsquid[0]:
+    monthly_cpu_credit_hrs: 720
+    
+  aws_elasticache_replication_group.subsquid[0]:
+    monthly_data_storage_gb: 20
+    monthly_data_transfer_gb: 500
+    
+  aws_efs_file_system.subsquid:
+    storage_gb: 50
+    monthly_infrequent_access_read_gb: 20
+    monthly_infrequent_access_write_gb: 20 
