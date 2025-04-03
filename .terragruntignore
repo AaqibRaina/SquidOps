@@ -1,0 +1,73 @@
+# Terraform and Terragrunt cache directories
+.terraform/
+.terragrunt-cache/
+
+# Local state files
+*.tfstate
+*.tfstate.*
+terraform.tfstate.d/
+.terraform.lock.hcl
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude all .tfvars files, which might contain sensitive data
+*.tfvars
+*.tfvars.json
+
+# Ignore override files as they're usually used for local development
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# Ignore generated plan files
+*tfplan*
+
+# Ignore local environment files
+.env
+.envrc
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Ignore backup files
+*.bak
+*.backup
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+tmp/
+
+# Ignore test directories
+**/test/
+**/tests/
+
+# Ignore documentation
+docs/
+*.md
+
+# Ignore scripts
+scripts/
+
+# Ignore examples directory (if you have one)
+examples/
+
+# Ignore any local development configurations
+**/local/ 
