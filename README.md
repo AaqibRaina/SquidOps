@@ -76,33 +76,33 @@ The module provides three simple optimization levels:
 
 ### Standard Traffic (Up to 500K daily queries per squid)
 
-| Configuration | Monthly Cost Estimate (Per Squid) | Monthly Cost for 5 Squids |
-|---------------|-----------------------------------|---------------------------|
-| Subsquid Cloud | $2,000+ | $10,000+ |
+| Configuration | Monthly Cost (Per Squid) | Monthly Cost for 5 Squids |
+|---------------|--------------------------|---------------------------|
+| Subsquid Cloud | $400 | $2,000 |
 | Basic | $300 - $350 | $1,500 - $1,750 |
 | Balanced | $180 - $220 | $900 - $1,100 |
 | Aggressive | $100 - $140 | $500 - $700 |
 
 This represents potential savings of:
-- **Basic**: 82-85% savings compared to Subsquid Cloud
-- **Balanced**: 89-91% savings compared to Subsquid Cloud
-- **Aggressive**: 93-95% savings compared to Subsquid Cloud
+- **Basic**: 12-25% savings compared to Subsquid Cloud
+- **Balanced**: 45-55% savings compared to Subsquid Cloud
+- **Aggressive**: 65-75% savings compared to Subsquid Cloud
 
 ### High Traffic (5M+ daily queries per squid)
 
-| Configuration | Monthly Cost Estimate (Per Squid) | Monthly Cost for 5 Squids |
-|---------------|-----------------------------------|---------------------------|
-| Subsquid Cloud | $15,800 - $16,000 | $79,000 - $80,000 |
+| Configuration | Monthly Cost (Per Squid) | Monthly Cost for 5 Squids |
+|---------------|--------------------------|---------------------------|
+| Subsquid Cloud | $2,000 | $10,000 |
 | Basic | $500 - $600 | $2,500 - $3,000 |
 | Balanced | $350 - $450 | $1,750 - $2,250 |
 | Aggressive | $250 - $350 | $1,250 - $1,750 |
 
-For high-traffic scenarios, the savings are even more dramatic:
-- **Basic**: 96-97% savings compared to Subsquid Cloud
-- **Balanced**: 97-98% savings compared to Subsquid Cloud
-- **Aggressive**: 98% savings compared to Subsquid Cloud
+For high-traffic scenarios, the savings are more significant:
+- **Basic**: 70-75% savings compared to Subsquid Cloud
+- **Balanced**: 77-82% savings compared to Subsquid Cloud
+- **Aggressive**: 82-87% savings compared to Subsquid Cloud
 
-*Note: Subsquid Cloud pricing is based on their published rates for query volume, archive access, and base subscription costs. Self-hosted costs include all AWS infrastructure components.*
+*Note: Costs may vary based on actual usage patterns, query volume, and data processing requirements. The high-traffic scenario is based on your actual costs for 5 squids with 5M daily queries each.*
 
 ## Outputs
 
@@ -217,6 +217,62 @@ module "subsquid" {
   tags = {
     Project     = "blockchain-data"
     Environment = "prod"
+    ManagedBy   = "terraform"
+  }
+}
+```
+
+## Real-World Example: ShibRPC Configuration
+
+```hcl
+module "subsquid" {
+  source = "../../../modules/subsquid"
+
+  region      = "us-east-1"
+  environment = "prod"
+  vpc_id      = dependency.vpc.outputs.vpc_id
+  subnet_ids  = dependency.vpc.outputs.private_subnets
+  
+  # Shiba Inu RPC configuration
+  subsquid_image     = "shibaswap/shibrpc-indexer:latest"
+  chain_rpc_endpoint = "https://shibrpc.com/"
+  
+  # Database configuration
+  database_name = "shibrpc_mainnet"
+  database_serverless = true
+  database_min_capacity = 0.5
+  database_max_capacity = 8
+  
+  # Cost optimization
+  cost_optimization_level = "balanced"
+  use_spot_instances = true
+  use_graviton_processors = true
+  
+  # Performance settings
+  enable_caching = true
+  cache_instance_type = "cache.t4g.small"
+  enable_query_caching = true
+  query_cache_ttl = 60
+  enable_connection_pooling = true
+  connection_pool_size = 20
+  enable_compression = true
+  
+  # Scaling configuration
+  min_capacity = 1
+  max_capacity = 5
+  enable_auto_scaling = true
+  
+  # Custom environment variables
+  custom_environment_variables = {
+    CHAIN_ID = "1"
+    NETWORK  = "shiba"
+    TOKEN_SYMBOL = "SHIB"
+  }
+  
+  tags = {
+    Project     = "ShibaSwap"
+    Environment = "prod"
+    Chain       = "shiba-mainnet"
     ManagedBy   = "terraform"
   }
 }
