@@ -84,6 +84,11 @@ output "cache_endpoint" {
   value       = var.enable_caching ? aws_elasticache_replication_group.subsquid[0].primary_endpoint_address : null
 }
 
+output "cache_enabled" {
+  description = "Whether Redis caching is enabled"
+  value       = var.enable_caching
+}
+
 output "using_spot_instances" {
   description = "Whether Spot instances are being used"
   value       = var.use_spot_instances

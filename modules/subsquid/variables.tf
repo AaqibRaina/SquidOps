@@ -175,15 +175,15 @@ variable "enable_performance_insights" {
 }
 
 variable "enable_caching" {
-  description = "Enable Redis caching layer for GraphQL responses"
+  description = "Enable Redis caching for improved performance"
   type        = bool
   default     = true
 }
 
 variable "cache_instance_type" {
-  description = "Redis cache instance type"
+  description = "Instance type for Redis cache"
   type        = string
-  default     = "cache.t4g.small"
+  default     = "cache.t3.small"
 }
 
 variable "cache_ttl" {
@@ -241,19 +241,19 @@ variable "read_replica_count" {
 }
 
 variable "enable_query_caching" {
-  description = "Enable query result caching at the GraphQL layer"
+  description = "Enable caching of GraphQL query results"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "query_cache_ttl" {
-  description = "TTL for cached query results in seconds"
+  description = "Time-to-live for cached query results in seconds"
   type        = number
-  default     = 30
+  default     = 60
 }
 
 variable "enable_compression" {
-  description = "Enable compression for responses"
+  description = "Enable compression for API responses"
   type        = bool
   default     = true
 }

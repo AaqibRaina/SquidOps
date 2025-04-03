@@ -1,8 +1,8 @@
-# AWS Subsquid Indexer Terraform Module
+# Subsquid Terraform Module
 
-This Terraform module deploys a cost-optimized Subsquid indexer on AWS with minimal configuration, following the [official Subsquid self-hosting guidelines](https://docs.sqd.ai/sdk/resources/self-hosting/).
+This module deploys a production-ready Subsquid indexer infrastructure on AWS with cost optimization features.
 
-## Simple Usage
+## Usage
 
 ```hcl
 module "subsquid" {

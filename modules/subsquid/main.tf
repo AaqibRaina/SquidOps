@@ -148,7 +148,7 @@ locals {
   ]
   
   # Redis environment variables (if caching is enabled)
-  redis_environment = local.selected_config.enable_caching ? [
+  redis_environment = var.enable_caching ? [
     {
       name  = "REDIS_URL"
       value = "redis://${aws_elasticache_replication_group.subsquid[0].primary_endpoint_address}:6379"
@@ -171,12 +171,25 @@ locals {
     }
   ] : []
   
+  # Add query caching if enabled
+  query_caching_env = var.enable_query_caching ? [
+    {
+      name  = "QUERY_CACHE_ENABLED"
+      value = "true"
+    },
+    {
+      name  = "QUERY_CACHE_TTL"
+      value = tostring(var.query_cache_ttl)
+    }
+  ] : []
+  
   # Combine all environment variables
   combined_environment = concat(
     local.base_environment,
     local.redis_environment,
     local.connection_pooling_env,
     local.compression_env,
+    local.query_caching_env,
     var.chain_rpc_endpoint != "" ? [
       {
         name  = "CHAIN_RPC"
@@ -187,6 +200,12 @@ locals {
       {
         name  = "ARCHIVE_ENDPOINT"
         value = var.archive_endpoint
+      }
+    ] : [],
+    var.enable_api_auth ? [
+      {
+        name  = "API_KEY"
+        value = random_password.api_key[0].result
       }
     ] : [],
     [for k, v in var.custom_environment_variables : {
@@ -262,6 +281,12 @@ locals {
           value = "3000"  # Prometheus port as per official docs
         }
       ],
+      var.enable_caching ? [
+        {
+          name  = "REDIS_URL"
+          value = "redis://${aws_elasticache_replication_group.subsquid[0].primary_endpoint_address}:6379"
+        }
+      ] : [],
       # Add custom environment variables
       [for k, v in var.custom_environment_variables : {
         name  = k
@@ -328,7 +353,7 @@ resource "aws_ecs_task_definition" "subsquid_api" {
   # Use ARM architecture if Graviton is enabled
   runtime_platform {
     operating_system_family = "LINUX"
-    cpu_architecture        = local.selected_config.use_graviton ? "ARM64" : "X86_64"
+    cpu_architecture        = var.use_graviton_processors ? "ARM64" : "X86_64"
   }
   
   # Mount EFS volume
@@ -368,7 +393,7 @@ resource "aws_ecs_task_definition" "subsquid_processor" {
   # Use ARM architecture if Graviton is enabled
   runtime_platform {
     operating_system_family = "LINUX"
-    cpu_architecture        = local.selected_config.use_graviton ? "ARM64" : "X86_64"
+    cpu_architecture        = var.use_graviton_processors ? "ARM64" : "X86_64"
   }
   
   # Mount EFS volume
@@ -419,7 +444,7 @@ resource "aws_ecs_service" "subsquid_api" {
   
   # Enable capacity provider strategy for Spot instances
   capacity_provider_strategy {
-    capacity_provider = local.selected_config.use_spot_instances ? "FARGATE_SPOT" : "FARGATE"
+    capacity_provider = var.use_spot_instances ? "FARGATE_SPOT" : "FARGATE"
     weight            = 1
     base              = 1
   }
@@ -458,7 +483,7 @@ resource "aws_ecs_service" "subsquid_processor" {
   
   # Enable capacity provider strategy for Spot instances
   capacity_provider_strategy {
-    capacity_provider = local.selected_config.use_spot_instances ? "FARGATE_SPOT" : "FARGATE"
+    capacity_provider = var.use_spot_instances ? "FARGATE_SPOT" : "FARGATE"
     weight            = 1
     base              = 1
   }
@@ -570,7 +595,7 @@ resource "aws_db_instance" "subsquid" {
 
 # Redis cache if enabled
 resource "aws_elasticache_replication_group" "subsquid" {
-  count                = local.selected_config.enable_caching ? 1 : 0
+  count                = var.enable_caching ? 1 : 0
   replication_group_id = "subsquid-${var.environment}"
   description          = "Redis cache for Subsquid"
   node_type            = local.selected_config.use_graviton ? "cache.t4g.small" : "cache.t3.small"
@@ -610,33 +635,6 @@ resource "aws_elasticache_subnet_group" "subsquid" {
   count      = var.enable_caching ? 1 : 0
   name       = "subsquid-cache-${var.environment}"
   subnet_ids = var.subnet_ids
-}
-
-resource "aws_elasticache_replication_group" "subsquid" {
-  count                = var.enable_caching ? 1 : 0
-  replication_group_id = "subsquid-cache-${var.environment}"
-  description          = "Redis cache for Subsquid GraphQL responses"
-  node_type            = var.cache_instance_type
-  port                 = 6379
-  parameter_group_name = "default.redis6.x"
-  engine_version       = "6.2"
-  subnet_group_name    = aws_elasticache_subnet_group.subsquid[0].name
-  security_group_ids   = [aws_security_group.cache.id]
-  
-  automatic_failover_enabled = true
-  multi_az_enabled           = true
-  
-  num_cache_clusters = 2
-  
-  at_rest_encryption_enabled = true
-  transit_encryption_enabled = true
-  
-  tags = merge(
-    var.tags,
-    {
-      Name = "subsquid-cache-${var.environment}"
-    }
-  )
 }
 
 # Add security group for Redis cache
@@ -934,7 +932,7 @@ resource "aws_db_instance" "subsquid" {
   storage_encrypted    = true
   kms_key_id           = aws_kms_key.subsquid_db.arn
   db_name              = var.database_name
-  username             = var.database_username
+  username             = "subsquid"
   password             = random_password.db_password.result
   vpc_security_group_ids = [aws_security_group.database.id]
   db_subnet_group_name = aws_db_subnet_group.subsquid.name
@@ -976,71 +974,6 @@ resource "aws_db_parameter_group" "subsquid" {
   }
   
   tags = var.tags
-}
-
-# Add Redis cache for GraphQL responses
-resource "aws_elasticache_subnet_group" "subsquid" {
-  count      = var.enable_caching ? 1 : 0
-  name       = "subsquid-cache-${var.environment}"
-  subnet_ids = var.subnet_ids
-}
-
-resource "aws_elasticache_replication_group" "subsquid" {
-  count                = var.enable_caching ? 1 : 0
-  replication_group_id = "subsquid-cache-${var.environment}"
-  description          = "Redis cache for Subsquid GraphQL responses"
-  node_type            = var.cache_instance_type
-  port                 = 6379
-  parameter_group_name = "default.redis6.x"
-  engine_version       = "6.2"
-  subnet_group_name    = aws_elasticache_subnet_group.subsquid[0].name
-  security_group_ids   = [aws_security_group.cache.id]
-  
-  automatic_failover_enabled = true
-  multi_az_enabled           = true
-  
-  num_cache_clusters = 2
-  
-  at_rest_encryption_enabled = true
-  transit_encryption_enabled = true
-  
-  tags = merge(
-    var.tags,
-    {
-      Name = "subsquid-cache-${var.environment}"
-    }
-  )
-}
-
-# Add security group for Redis cache
-resource "aws_security_group" "cache" {
-  count       = var.enable_caching ? 1 : 0
-  name_prefix = "subsquid-cache-"
-  vpc_id      = var.vpc_id
-  description = "Security group for Subsquid Redis cache"
-
-  ingress {
-    from_port       = 6379
-    to_port         = 6379
-    protocol        = "tcp"
-    security_groups = [aws_security_group.subsquid.id]
-    description     = "Redis access from Subsquid servers"
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
-  }
-
-  tags = merge(
-    var.tags,
-    {
-      Name = "subsquid-cache-${var.environment}"
-    }
-  )
 }
 
 # Update container definition with optimizations
