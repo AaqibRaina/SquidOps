@@ -1,20 +1,32 @@
 output "endpoint" {
   description = "Subsquid GraphQL API endpoint URL"
-  value       = "http://${aws_lb.subsquid.dns_name}:4350/graphql"
+  value       = var.enable_load_balancer ? "http://${aws_lb.subsquid[0].dns_name}:4350/graphql" : null
 }
 
 output "prometheus_endpoint" {
   description = "Prometheus metrics endpoint URL"
-  value       = "http://${aws_service_discovery_service.subsquid_processor.name}.${aws_service_discovery_private_dns_namespace.subsquid.name}:3000"
+  value       = "http://${aws_service_discovery_service.subsquid.name}.${aws_service_discovery_private_dns_namespace.subsquid.name}:3000"
 }
 
 output "database_endpoint" {
-  description = "Database endpoint"
+  description = "Endpoint of the database"
   value       = local.database_host
+  sensitive   = true
+}
+
+output "database_name" {
+  description = "Name of the database"
+  value       = var.database_name
+}
+
+output "database_username" {
+  description = "Username for the database"
+  value       = var.database_username
+  sensitive   = true
 }
 
 output "database_password" {
-  description = "Database password"
+  description = "Password for the database"
   value       = random_password.db_password.result
   sensitive   = true
 }
@@ -34,27 +46,22 @@ output "estimated_monthly_savings" {
 }
 
 output "subsquid_endpoint" {
-  description = "Subsquid API endpoint URL"
-  value       = var.enable_load_balancer ? "http://subsquid.${var.environment}.internal:3000/graphql" : "http://${aws_service_discovery_service.subsquid.name}.${aws_service_discovery_private_dns_namespace.subsquid.name}:3000/graphql"
+  description = "Endpoint URL for the Subsquid GraphQL API"
+  value       = var.enable_load_balancer ? "http://subsquid.${var.project}.${var.environment}.internal" : null
 }
 
 output "load_balancer_dns" {
-  description = "DNS name of the Subsquid load balancer"
+  description = "DNS name of the load balancer"
   value       = var.enable_load_balancer ? aws_lb.subsquid[0].dns_name : null
 }
 
 output "client_security_group_id" {
-  description = "Security group ID for Subsquid clients"
-  value       = aws_security_group.subsquid_client.id
-}
-
-output "database_username" {
-  description = "PostgreSQL database username"
-  value       = var.database_username
+  description = "ID of the security group for clients accessing Subsquid"
+  value       = aws_security_group.client.id
 }
 
 output "api_key" {
-  description = "API key for Subsquid GraphQL endpoint (if authentication is enabled)"
+  description = "API key for the GraphQL API (if enabled)"
   value       = var.enable_api_auth ? random_password.api_key[0].result : null
   sensitive   = true
 }
@@ -70,12 +77,12 @@ output "efs_id" {
 }
 
 output "ecs_cluster_name" {
-  description = "ECS cluster name"
+  description = "Name of the ECS cluster"
   value       = aws_ecs_cluster.subsquid.name
 }
 
 output "ecs_service_name" {
-  description = "ECS service name"
+  description = "Name of the ECS service"
   value       = aws_ecs_service.subsquid.name
 }
 
@@ -102,4 +109,14 @@ output "using_graviton" {
 output "using_serverless_db" {
   description = "Whether serverless database is being used"
   value       = var.database_serverless
+}
+
+output "security_group_id" {
+  description = "ID of the security group for Subsquid services"
+  value       = aws_security_group.subsquid.id
+}
+
+output "effective_config" {
+  description = "Effective configuration after applying optimization level and overrides"
+  value       = local.effective_config
 } 

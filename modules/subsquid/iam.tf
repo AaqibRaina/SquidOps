@@ -1,7 +1,10 @@
-# Create IAM roles for ECS tasks
-resource "aws_iam_role" "ecs_execution" {
-  name = "subsquid-ecs-execution-${var.environment}"
+# -----------------------------------------------------
+# IAM resources
+# -----------------------------------------------------
 
+resource "aws_iam_role" "ecs_execution" {
+  name = "${local.name_prefix}-execution"
+  
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -14,8 +17,8 @@ resource "aws_iam_role" "ecs_execution" {
       }
     ]
   })
-
-  tags = var.tags
+  
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_execution" {
@@ -24,8 +27,8 @@ resource "aws_iam_role_policy_attachment" "ecs_execution" {
 }
 
 resource "aws_iam_role" "ecs_task" {
-  name = "subsquid-ecs-task-${var.environment}"
-
+  name = "${local.name_prefix}-task"
+  
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -38,15 +41,14 @@ resource "aws_iam_role" "ecs_task" {
       }
     ]
   })
-
-  tags = var.tags
+  
+  tags = local.tags
 }
 
-# Add policy for EFS access
 resource "aws_iam_policy" "efs_access" {
-  name        = "subsquid-efs-access-${var.environment}"
-  description = "Allow Subsquid tasks to access EFS"
-
+  name        = "${local.name_prefix}-efs-access"
+  description = "Allow ECS tasks to access EFS"
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -54,10 +56,14 @@ resource "aws_iam_policy" "efs_access" {
         Effect = "Allow"
         Action = [
           "elasticfilesystem:ClientMount",
-          "elasticfilesystem:ClientWrite",
-          "elasticfilesystem:ClientRootAccess"
+          "elasticfilesystem:ClientWrite"
         ]
         Resource = aws_efs_file_system.subsquid.arn
+        Condition = {
+          StringEquals = {
+            "elasticfilesystem:AccessPointArn" = aws_efs_access_point.subsquid.arn
+          }
+        }
       }
     ]
   })
@@ -68,11 +74,10 @@ resource "aws_iam_role_policy_attachment" "efs_access" {
   policy_arn = aws_iam_policy.efs_access.arn
 }
 
-# Add policy for CloudWatch logs
 resource "aws_iam_policy" "cloudwatch_logs" {
-  name        = "subsquid-cloudwatch-logs-${var.environment}"
-  description = "Allow Subsquid tasks to write to CloudWatch logs"
-
+  name        = "${local.name_prefix}-cloudwatch-logs"
+  description = "Allow ECS tasks to write to CloudWatch logs"
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -80,8 +85,7 @@ resource "aws_iam_policy" "cloudwatch_logs" {
         Effect = "Allow"
         Action = [
           "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "logs:DescribeLogStreams"
+          "logs:PutLogEvents"
         ]
         Resource = "${aws_cloudwatch_log_group.subsquid.arn}:*"
       }

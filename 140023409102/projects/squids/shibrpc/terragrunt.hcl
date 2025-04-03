@@ -11,7 +11,7 @@ dependency "vpc" {
 }
 
 terraform {
-  source = "../../../modules/subsquid"
+  source = "../../../../modules/subsquid"
 }
 
 inputs = {
@@ -20,8 +20,11 @@ inputs = {
   vpc_id      = dependency.vpc.outputs.vpc_id
   subnet_ids  = dependency.vpc.outputs.private_subnets
   
-  # Shiba Inu RPC configuration
-  subsquid_image     = "shibaswap/shibrpc-indexer:latest"
+  # Add project name for DNS namespacing
+  project     = "shibrpc"
+  
+  # Use a public image for testing
+  subsquid_image     = "nginx:latest"  # Widely available public image
   chain_rpc_endpoint = "https://shibrpc.com/"
   
   # Database configuration
