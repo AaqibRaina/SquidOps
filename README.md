@@ -120,7 +120,7 @@ The following tables provide estimated monthly costs for different traffic level
 | Load Balancer | $16-20 | $16-20 | $16-20 |
 | CloudWatch | $5-10 | $5-10 | $5-10 |
 | **Total** | **$166-240** | **$131-210** | **$109-170** |
-| **Managed Service Cost** | **$500-700** | **$500-700** | **$500-700** |
+| **Squid Cloud Cost** | **$500-700** | **$500-700** | **$500-700** |
 | **Savings** | **60-70%** | **70-80%** | **75-85%** |
 
 #### 5M-10M Requests/Month
@@ -134,7 +134,7 @@ The following tables provide estimated monthly costs for different traffic level
 | Load Balancer | $16-20 | $16-20 | $16-20 |
 | CloudWatch | $15-25 | $15-25 | $15-25 |
 | **Total** | **$421-615** | **$341-515** | **$266-395** |
-| **Managed Service Cost** | **$1,500-2,000** | **$1,500-2,000** | **$1,500-2,000** |
+| **Squid Cloud Cost** | **$1,500-2,000** | **$1,500-2,000** | **$1,500-2,000** |
 | **Savings** | **70-80%** | **75-85%** | **80-90%** |
 
 *Note: These estimates are based on AWS us-east-1 region pricing as of 2023. Actual costs may vary based on specific usage patterns, data transfer, and other factors.*
