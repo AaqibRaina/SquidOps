@@ -1,6 +1,6 @@
 # Subsquid Terraform Module
 
-This module deploys a production-ready Subsquid indexer infrastructure on AWS with cost optimization features.
+This module deploys a production-ready Subsquid indexer infrastructure on AWS with comprehensive cost optimization features.
 
 ## Usage
 
@@ -410,5 +410,28 @@ module "subsquid" {
     Environment = "prod"
     ManagedBy   = "terraform"
   }
+}
+```
+
+## Cost-Optimized Usage
+
+```hcl
+module "subsquid" {
+  source = "./modules/subsquid"
+
+  environment = "prod"
+  vpc_id      = "vpc-12345678"
+  subnet_ids  = ["subnet-12345678", "subnet-87654321"]
+  
+  # Optional: Set cost optimization level
+  cost_optimization_level = "balanced"  # Options: basic, balanced, aggressive
+  
+  # Optional: Subsquid configuration
+  subsquid_image     = "your-org/custom-subsquid-indexer:latest"
+  chain_rpc_endpoint = "https://your-blockchain-rpc-endpoint"
+  
+  # Optional: Scaling configuration
+  min_capacity = 1
+  max_capacity = 4
 }
 ``` 
