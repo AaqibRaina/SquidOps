@@ -1,39 +1,58 @@
 FROM node:18-alpine as builder
 
 WORKDIR /squid
+
+# Install build dependencies
 RUN apk add python3 make g++
 
-# Install dependencies
+# Copy package files first to leverage Docker cache
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Build the squid
+# Copy source code
 COPY . .
+
+# Build the application
 RUN npm run build
 
-# Production stage
+# Production image
 FROM node:18-alpine
 
 WORKDIR /squid
-RUN apk add python3 make g++
 
-# Copy built artifacts and install production dependencies
+# Install only production dependencies
+RUN apk add --no-cache python3 make g++ netcat-openbsd && \
+    ln -sf python3 /usr/bin/python
+ENV PYTHON=/usr/bin/python3
 COPY --from=builder /squid/package.json /squid/package-lock.json ./
-COPY --from=builder /squid/lib ./lib
-COPY --from=builder /squid/schema.graphql ./schema.graphql
-COPY --from=builder /squid/db ./db
-COPY --from=builder /squid/commands.json ./commands.json
-COPY --from=builder /squid/squid.yaml ./squid.yaml
 RUN npm ci --production
 
-# Environment variables
+# Copy built application
+COPY --from=builder /squid/lib ./lib
+COPY --from=builder /squid/abi ./abi
+COPY --from=builder /squid/db ./db
+COPY --from=builder /squid/schema.graphql ./schema.graphql
+COPY --from=builder /squid/commands.json ./commands.json
+
+# Copy and make the startup script executable
+COPY start.sh ./
+RUN chmod +x start.sh
+
+# Install global dependencies
+RUN npm install -g @subsquid/cli typescript
+
+# Set environment variables
 ENV NODE_ENV=production
 ENV PROCESSOR_PROMETHEUS_PORT=3000
 ENV GQL_PORT=4350
 
-# Expose ports for the processor metrics and GraphQL server
+# Expose ports
 EXPOSE 3000
 EXPOSE 4350
 
-# Run processor and GraphQL server in parallel
-CMD ["sh", "-c", "npx sqd process & npx sqd serve"]
+# Start the application using the startup script
+CMD ["./start.sh"]
+
+# Add labels for better management
+LABEL maintainer="Subsquid Team"
+LABEL version="1.0"

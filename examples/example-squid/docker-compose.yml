@@ -5,10 +5,15 @@ services:
     image: postgres:15
     environment:
       POSTGRES_DB: squid
-      POSTGRES_PASSWORD: squid
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: squid
     ports:
       - "${DB_PORT}:5432"
-      # command: ["postgres", "-c", "log_statement=all"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U squid"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -19,6 +24,40 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes --requirepass redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  squid:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    image: example-squid:latest
+    container_name: example-squid
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=squid
+      - DB_USER=squid
+      - DB_PASSWORD=postgres
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redis
+      - REDIS_URL=redis://:redis@redis:6379
+      - PROCESSOR_PROMETHEUS_PORT=3000
+      - GQL_PORT=4350
+    ports:
+      - "3000:3000"
+      - "4350:4350"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   redis_data:

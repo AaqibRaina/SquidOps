@@ -1,8 +1,8 @@
-import * as ethers from 'ethers'
+import { Interface } from '@ethersproject/abi'
 import {LogEvent, Func, ContractBase} from './abi.support'
 import {ABI_JSON} from './erc20.abi'
 
-export const abi = new ethers.Interface(ABI_JSON);
+export const abi = new Interface(ABI_JSON);
 
 export const events = {
     Approval: new LogEvent<([owner: string, spender: string, value: bigint] & {owner: string, spender: string, value: bigint})>(

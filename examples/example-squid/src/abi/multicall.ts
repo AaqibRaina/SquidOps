@@ -1,8 +1,8 @@
-import * as ethers from 'ethers'
+import { Interface } from '@ethersproject/abi'
 import {ContractBase, Func} from './abi.support'
 
 
-const abi = new ethers.Interface([
+const abi = new Interface([
     {
         type: 'function',
         name: 'aggregate',
@@ -56,12 +56,12 @@ type Call = [address: string, bytes: string]
 
 
 const aggregate = new Func<[calls: Call[]], {}, {blockNumber: bigint, returnData: string[]}>(
-    abi, abi.getFunction('aggregate')!.selector
+    abi, abi.getFunction('aggregate')!.format('sighash')
 )
 
 
 const try_aggregate = new Func<[requireSuccess: boolean, calls: Array<[target: string, callData: string]>], {}, Array<{success: boolean, returnData: string}>>(
-    abi, abi.getFunction('tryAggregate')!.selector
+    abi, abi.getFunction('tryAggregate')!.format('sighash')
 )
 
 

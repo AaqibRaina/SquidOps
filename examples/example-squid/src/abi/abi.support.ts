@@ -1,5 +1,8 @@
 import assert from 'assert'
-import * as ethers from 'ethers'
+import { ethers } from 'ethers'
+import { EventFragment, FunctionFragment, Interface } from '@ethersproject/abi'
+import { BytesLike } from '@ethersproject/bytes'
+import { getAddress } from '@ethersproject/address'
 
 
 export interface LogRecord {
@@ -9,9 +12,9 @@ export interface LogRecord {
 
 
 export class LogEvent<Args> {
-    private fragment: ethers.EventFragment
+    private fragment: EventFragment
 
-    constructor(private abi: ethers.Interface, public readonly topic: string) {
+    constructor(private abi: Interface, public readonly topic: string) {
         let fragment = abi.getEvent(topic)
         assert(fragment != null, 'Missing fragment')
         this.fragment = fragment
@@ -24,15 +27,15 @@ export class LogEvent<Args> {
 
 
 export class Func<Args extends any[], FieldArgs, Result> {
-    private fragment: ethers.FunctionFragment
+    private fragment: FunctionFragment
 
-    constructor(private abi: ethers.Interface, public readonly sighash: string) {
+    constructor(private abi: Interface, public readonly sighash: string) {
         let fragment = abi.getFunction(sighash)
         assert(fragment != null, 'Missing fragment')
         this.fragment = fragment
     }
 
-    decode(input: ethers.BytesLike): Args & FieldArgs {
+    decode(input: BytesLike): Args & FieldArgs {
         return this.abi.decodeFunctionData(this.fragment, input) as any as Args & FieldArgs
     }
 
@@ -40,12 +43,12 @@ export class Func<Args extends any[], FieldArgs, Result> {
         return this.abi.encodeFunctionData(this.fragment, args)
     }
 
-    decodeResult(output: ethers.BytesLike): Result {
+    decodeResult(output: BytesLike): Result {
         const decoded = this.abi.decodeFunctionResult(this.fragment, output)
         return decoded.length > 1 ? decoded : decoded[0]
     }
 
-    tryDecodeResult(output: ethers.BytesLike): Result | undefined {
+    tryDecodeResult(output: BytesLike): Result | undefined {
         try {
             return this.decodeResult(output)
         } catch(err: any) {
@@ -99,13 +102,13 @@ export class ContractBase {
         this._chain = ctx._chain
         if (typeof blockOrAddress === 'string')  {
             this.blockHeight = ctx.block.height
-            this.address = ethers.getAddress(blockOrAddress)
+            this.address = getAddress(blockOrAddress)
         } else  {
             if (address == null) {
                 throw new Error('missing contract address')
             }
             this.blockHeight = blockOrAddress.height
-            this.address = ethers.getAddress(address)
+            this.address = getAddress(address)
         }
     }
 
