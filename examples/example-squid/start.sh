@@ -13,4 +13,12 @@ npx squid-typeorm-migration apply
 # Start both the processor and GraphQL server
 echo "Starting the processor and GraphQL server..."
 node lib/main.js & # Run processor in background
-npx squid-graphql-server --dumb-cache in-memory --subscriptions 
+
+# Check if REDIS_URL is set and use appropriate cache
+if [ -n "$REDIS_URL" ]; then
+    echo "Using Redis cache with URL: $REDIS_URL"
+    npx squid-graphql-server --dumb-cache redis --subscriptions
+else
+    echo "Using in-memory cache"
+    npx squid-graphql-server --dumb-cache in-memory --subscriptions
+fi
