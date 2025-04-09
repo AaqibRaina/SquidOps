@@ -24,7 +24,7 @@ resource "aws_ecs_task_definition" "subsquid" {
   
   container_definitions = jsonencode([
     merge(local.container_definition, {
-      command = ["sqd", "serve:prod"],
+      command = var.container_command != null ? var.container_command : null,
       image_hash = md5(var.subsquid_image)
     })
   ])
@@ -126,4 +126,4 @@ resource "aws_appautoscaling_policy" "memory" {
     scale_in_cooldown  = 300
     scale_out_cooldown = 60
   }
-} 
+}
