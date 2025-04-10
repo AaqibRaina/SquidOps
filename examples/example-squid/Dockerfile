@@ -1,4 +1,9 @@
+
 FROM node:18-alpine as builder
+
+# Add labels for better management
+LABEL maintainer="Kumar Saurabh < <itsksaurabh@gmail.com>"
+LABEL version="1.0"
 
 WORKDIR /squid
 
@@ -52,7 +57,3 @@ EXPOSE 4350
 
 # Start the application using the startup script
 CMD ["./start.sh"]
-
-# Add labels for better management
-LABEL maintainer="Subsquid Team"
-LABEL version="1.0"
