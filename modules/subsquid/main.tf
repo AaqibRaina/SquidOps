@@ -284,7 +284,7 @@ resource "aws_lb_target_group" "subsquid" {
   health_check {
     enabled             = true
     interval            = 30
-    path                = "/health"
+    path                = "/graphql"
     port                = "traffic-port"
     healthy_threshold   = 3
     unhealthy_threshold = 3
