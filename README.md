@@ -1,6 +1,28 @@
-# Subsquid Infrastructure Module
+# Subsquid Infrastructure Project
 
-This Terraform module deploys a production-ready Subsquid indexing infrastructure on AWS with optimized cost and performance.
+This repository provides a complete infrastructure solution for deploying Subsquid indexers at scale on AWS, featuring:
+- Production-ready Terraform modules for AWS deployment
+- Example Squid implementation with Redis and PostgreSQL
+- Comprehensive cost analysis and optimization tools
+
+## Project Components
+
+### 1. Example Implementation
+Located in `/examples/example-squid/`, this reference implementation indexes USDC token transfers on Ethereum mainnet, demonstrating:
+- Integration with Redis caching and PostgreSQL
+- Docker-based deployment configuration
+- GraphQL API implementation
+- Prometheus metrics integration
+
+[View Example Documentation](examples/example-squid/README.md)
+
+### 2. Cost Analysis Tools
+Located in `/cost/`, these tools help analyze and optimize infrastructure costs:
+- Cost analysis script for deployment estimation
+- Usage scenario configurations (high/low)
+- Historical cost reports
+
+### 3. Infrastructure Module
 
 ## Architecture
 
@@ -245,4 +267,4 @@ You can set up CloudWatch Alarms for these metrics to receive notifications when
 
 ## License
 
-MIT 
+MIT

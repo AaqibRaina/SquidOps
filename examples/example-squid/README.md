@@ -1,6 +1,6 @@
 # Example Squid Project
 
-This example demonstrates a Subsquid indexer implementation with Redis caching and PostgreSQL database integration.
+This example demonstrates a Subsquid indexer implementation that indexes USDC token transfers on Ethereum mainnet, featuring Redis caching and PostgreSQL database integration.
 
 ## Prerequisites
 
@@ -80,7 +80,7 @@ The project includes three main services:
 
 Once the GraphQL API is running, you can execute queries at `http://localhost:4350/graphql`. Here are some example queries:
 
-1. Get recent transfers with details:
+1. Get recent USDC transfers with details:
    ```graphql
    query GetRecentTransfers {
      transfers(orderBy: timestamp_DESC, limit: 5) {
@@ -88,7 +88,7 @@ Once the GraphQL API is running, you can execute queries at `http://localhost:43
        blockNumber
        timestamp
        txHash
-       amount
+       amount # Amount in USDC (6 decimals)
        from {
          id
        }
@@ -99,7 +99,7 @@ Once the GraphQL API is running, you can execute queries at `http://localhost:43
    }
    ```
 
-2. Get account details with transfer history:
+2. Get USDC transfer history for a specific account:
    ```graphql
    # Query
    query GetAccountDetails($accountId: String!) {
@@ -107,22 +107,26 @@ Once the GraphQL API is running, you can execute queries at `http://localhost:43
        id
        transfersFrom {
          timestamp
-         amount
+         amount # Amount in USDC (6 decimals)
          to { id }
+         txHash
        }
        transfersTo {
          timestamp
-         amount
+         amount # Amount in USDC (6 decimals)
          from { id }
+         txHash
        }
      }
    }
 
    # Variables (in GraphQL Playground Variables tab)
    {
-     "accountId": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+     "accountId": "0x55fe002aeff02f77364de339a1292923a15844b8" # Example USDC holder address
    }
    ```
+
+Note: The indexer tracks the USDC token contract (0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48) on Ethereum mainnet starting from block 6,082,465. All amounts are in USDC with 6 decimal places (e.g., 1000000 = 1 USDC).
 
 ## Development
 
