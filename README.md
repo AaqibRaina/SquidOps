@@ -14,7 +14,7 @@ Located in `/example-squid/`, this reference implementation indexes USDC token t
 - GraphQL API implementation
 - Prometheus metrics integration
 
-[View Example Documentation](examples/example-squid/README.md)
+[View Example Documentation](/example-squid/README.md)
 
 ### 2. Cost Analysis Tools
 Located in `/cost/`, these tools help analyze and optimize infrastructure costs:
