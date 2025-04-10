@@ -291,3 +291,27 @@ variable "log_retention_days" {
   type        = number
   default     = 30
 }
+
+variable "graphql_port" {
+  description = "Port for the GraphQL API"
+  type        = number
+  default     = 4350
+}
+
+variable "metrics_port" {
+  description = "Port for metrics endpoint"
+  type        = number
+  default     = 3000
+}
+
+variable "health_check_port" {
+  description = "Port for health check endpoint"
+  type        = number
+  default     = 4350
+}
+
+variable "monitoring_port" {
+  description = "Port for monitoring/metrics endpoint"
+  type        = number
+  default     = 9090
+}

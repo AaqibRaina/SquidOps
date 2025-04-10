@@ -119,4 +119,9 @@ output "security_group_id" {
 output "effective_config" {
   description = "Effective configuration after applying optimization level and overrides"
   value       = local.effective_config
+}
+
+output "graphql_endpoint" {
+  description = "GraphQL API endpoint"
+  value       = var.enable_load_balancer ? "http://${aws_lb.subsquid[0].dns_name}:${var.graphql_port}/graphql" : null
 } 

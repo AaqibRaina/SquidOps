@@ -120,8 +120,8 @@ resource "aws_security_group" "client" {
 
 resource "aws_security_group_rule" "subsquid_ingress_from_client" {
   type                     = "ingress"
-  from_port                = 4350
-  to_port                  = 4350
+  from_port                = var.graphql_port
+  to_port                  = var.graphql_port
   protocol                 = "tcp"
   security_group_id        = aws_security_group.subsquid.id
   source_security_group_id = aws_security_group.client.id
@@ -130,8 +130,8 @@ resource "aws_security_group_rule" "subsquid_ingress_from_client" {
 
 resource "aws_security_group_rule" "subsquid_ingress_from_alb" {
   type                     = "ingress"
-  from_port                = 4350
-  to_port                  = 4350
+  from_port                = var.graphql_port
+  to_port                  = var.graphql_port
   protocol                 = "tcp"
   security_group_id        = aws_security_group.subsquid.id
   source_security_group_id = aws_security_group.alb.id
@@ -140,8 +140,8 @@ resource "aws_security_group_rule" "subsquid_ingress_from_alb" {
 
 resource "aws_security_group_rule" "subsquid_ingress_metrics" {
   type                     = "ingress"
-  from_port                = 3000
-  to_port                  = 3000
+  from_port                = var.metrics_port
+  to_port                  = var.metrics_port
   protocol                 = "tcp"
   security_group_id        = aws_security_group.subsquid.id
   source_security_group_id = aws_security_group.alb.id
@@ -255,8 +255,8 @@ resource "aws_security_group" "subsquid_monitoring" {
   description = "Security group for Subsquid monitoring"
 
   ingress {
-    from_port   = 9090
-    to_port     = 9090
+    from_port   = var.monitoring_port
+    to_port     = var.monitoring_port
     protocol    = "tcp"
     cidr_blocks = [data.aws_vpc.selected.cidr_block]
     description = "Prometheus metrics endpoint"

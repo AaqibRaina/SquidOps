@@ -70,7 +70,7 @@ resource "aws_ecs_service" "subsquid" {
     content {
       target_group_arn = aws_lb_target_group.subsquid[0].arn
       container_name   = "subsquid"
-      container_port   = 4350
+      container_port   = var.graphql_port
     }
   }
   

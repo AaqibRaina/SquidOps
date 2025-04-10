@@ -23,8 +23,14 @@ inputs = {
   # Add project name for DNS namespacing
   project     = "example-squid"
   
+  # Port configuration
+  graphql_port     = 4350
+  metrics_port     = 3000
+  health_check_port = 4350
+  monitoring_port   = 9090
+  
   # Use a public image for testing
-  subsquid_image     = "nginx:latest"  # Widely available public image
+  subsquid_image     = "itsksaurabh/example-squid:latest"  # Example squid image
   chain_rpc_endpoint = "https://eth-mainnet.public.blastapi.io"
   contract_address   = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # USDC token contract
   

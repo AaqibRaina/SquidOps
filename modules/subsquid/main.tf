@@ -197,13 +197,13 @@ locals {
     
     portMappings = [
       {
-        containerPort = 4350
-        hostPort      = 4350
+        containerPort = var.graphql_port
+        hostPort      = var.graphql_port
         protocol      = "tcp"
       },
       {
-        containerPort = 3000
-        hostPort      = 3000
+        containerPort = var.metrics_port
+        hostPort      = var.metrics_port
         protocol      = "tcp"
       }
     ]
@@ -228,7 +228,7 @@ locals {
     }
     
     healthCheck = {
-      command     = ["CMD-SHELL", "curl -f http://localhost:4350/health || exit 1"]
+      command     = ["CMD-SHELL", "curl -f http://localhost:${var.health_check_port}/health || exit 1"]
       interval    = 30
       timeout     = 5
       retries     = 3
@@ -276,7 +276,7 @@ resource "aws_lb" "subsquid" {
 resource "aws_lb_target_group" "subsquid" {
   count       = var.enable_load_balancer ? 1 : 0
   name        = local.name_prefix
-  port        = 4350
+  port        = var.graphql_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
