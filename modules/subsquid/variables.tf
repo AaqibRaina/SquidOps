@@ -50,6 +50,12 @@ variable "database_name" {
   default     = "subsquid"
 }
 
+variable "container_command" {
+  type        = list(string)
+  description = "Optional command to run in the container. If not specified, the container's default CMD will be used."
+  default     = null
+}
+
 variable "database_username" {
   description = "Username for the database"
   type        = string
@@ -279,4 +285,4 @@ variable "log_retention_days" {
   description = "Number of days to retain CloudWatch logs"
   type        = number
   default     = 30
-} 
+}
