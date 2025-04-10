@@ -8,7 +8,7 @@ This repository provides a complete infrastructure solution for deploying Subsqu
 ## Project Components
 
 ### 1. Example Implementation
-Located in `/examples/example-squid/`, this reference implementation indexes USDC token transfers on Ethereum mainnet, demonstrating:
+Located in `/example-squid/`, this reference implementation indexes USDC token transfers on Ethereum mainnet, demonstrating:
 - Integration with Redis caching and PostgreSQL
 - Docker-based deployment configuration
 - GraphQL API implementation
