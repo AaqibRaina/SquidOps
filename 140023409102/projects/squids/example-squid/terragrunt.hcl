@@ -21,14 +21,15 @@ inputs = {
   subnet_ids  = dependency.vpc.outputs.private_subnets
   
   # Add project name for DNS namespacing
-  project     = "shibrpc"
+  project     = "example-squid"
   
   # Use a public image for testing
   subsquid_image     = "nginx:latest"  # Widely available public image
-  chain_rpc_endpoint = "https://shibrpc.com/"
+  chain_rpc_endpoint = "https://eth-mainnet.public.blastapi.io"
+  contract_address   = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # USDC token contract
   
   # Database configuration
-  database_name = "shibrpc_mainnet"
+  database_name = "example_squid_mainnet"
   database_serverless = true
   database_min_capacity = 0.5
   database_max_capacity = 8
@@ -55,14 +56,14 @@ inputs = {
   # Custom environment variables
   custom_environment_variables = {
     CHAIN_ID = "1"
-    NETWORK  = "shiba"
-    TOKEN_SYMBOL = "SHIB"
+    NETWORK  = "ethereum"
+    TOKEN_SYMBOL = "USDC"
   }
   
   tags = {
-    Project     = "ShibaSwap"
+    Project     = "ExampleSquid"
     Environment = "prod"
-    Chain       = "shiba-mainnet"
+    Chain       = "ethereum-mainnet"
     ManagedBy   = "terraform"
   }
 } 

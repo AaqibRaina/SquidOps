@@ -72,6 +72,7 @@ module "subsquid" {
   # Blockchain configuration
   subsquid_image     = "subsquid/evm-processor:latest"
   chain_rpc_endpoint = "https://ethereum-rpc.example.com/"
+  contract_address   = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   
   # Database configuration
   database_name = "ethereum_mainnet"
@@ -213,6 +214,7 @@ This module includes several performance optimizations:
 | subsquid_image | Docker image for Subsquid | string | n/a | yes |
 | cost_optimization_level | Cost optimization level (basic, balanced, aggressive) | string | "balanced" | no |
 | chain_rpc_endpoint | Blockchain RPC endpoint URL | string | "" | no |
+| contract_address | Smart contract address to monitor | string | "" | no |
 | archive_endpoint | Subsquid Archive endpoint URL | string | "" | no |
 | enable_caching | Whether to enable Redis caching | bool | false | no |
 | enable_query_caching | Whether to enable GraphQL query caching | bool | false | no |

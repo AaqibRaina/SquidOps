@@ -165,6 +165,12 @@ locals {
         value = var.chain_rpc_endpoint
       }
     ] : [],
+    var.contract_address != "" ? [
+      {
+        name  = "CONTRACT_ADDRESS"
+        value = var.contract_address
+      }
+    ] : [],
     var.archive_endpoint != "" ? [
       {
         name  = "ARCHIVE_ENDPOINT"

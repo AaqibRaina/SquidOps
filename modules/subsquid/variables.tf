@@ -167,6 +167,11 @@ variable "chain_rpc_endpoint" {
   default     = ""
 }
 
+variable "contract_address" {
+  description = "Smart contract address to monitor"
+  type        = string
+}
+
 variable "archive_endpoint" {
   description = "Subsquid Archive endpoint URL"
   type        = string

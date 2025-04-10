@@ -42,6 +42,10 @@ This example demonstrates a Subsquid indexer implementation that indexes USDC to
    REDIS_PORT=6379                 # Redis port (exposed)
    REDIS_PASSWORD=redis            # Redis password
    REDIS_URL=redis://:redis@redis:6379  # Redis connection URL
+
+   # Blockchain Configuration
+   CHAIN_RPC=https://eth-mainnet.public.blastapi.io  # Ethereum RPC endpoint
+   CONTRACT_ADDRESS=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48  # USDC token contract
    ```
 
 ## Services
