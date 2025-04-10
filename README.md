@@ -1,4 +1,4 @@
-# Subsquid Infrastructure Project
+# SquidOps
 
 This repository provides a complete infrastructure solution for deploying Subsquid indexers at scale on AWS, featuring:
 - Production-ready Terraform modules for AWS deployment
