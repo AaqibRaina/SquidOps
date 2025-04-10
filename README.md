@@ -5,26 +5,7 @@ This repository provides a complete infrastructure solution for deploying Subsqu
 - Example Squid implementation with Redis and PostgreSQL
 - Comprehensive cost analysis and optimization tools
 
-## Project Components
-
-### 1. Example Implementation
-Located in `/example-squid/`, this reference implementation indexes USDC token transfers on Ethereum mainnet, demonstrating:
-- Integration with Redis caching and PostgreSQL
-- Docker-based deployment configuration
-- GraphQL API implementation
-- Prometheus metrics integration
-
-[View Example Documentation](/example-squid/README.md)
-
-### 2. Cost Analysis Tools
-Located in `/cost/`, these tools help analyze and optimize infrastructure costs:
-- Cost analysis script for deployment estimation
-- Usage scenario configurations (high/low)
-- Historical cost reports
-
-### 3. Infrastructure Module
-
-## Architecture
+## System Design and Architecture
 
 ```mermaid
 graph TD
@@ -48,6 +29,26 @@ graph TD
     RPC -->|Fetches Blockchain Data| Blockchain[Blockchain Network]
 ```
 
+## Security Architecture
+
+```mermaid
+graph TD
+    subgraph "Security Groups"
+        SG_ALB[ALB Security Group]
+        SG_ECS[ECS Security Group]
+        SG_DB[Database Security Group]
+        SG_Cache[Cache Security Group]
+        SG_EFS[EFS Security Group]
+    end
+    
+    SG_ALB -->|Allows| Internet[Internet: Port 443]
+    SG_ALB -->|Connects to| SG_ECS
+    SG_ECS -->|Connects to| SG_DB
+    SG_ECS -->|Connects to| SG_Cache
+    SG_ECS -->|Connects to| SG_EFS
+    SG_ECS -->|Connects to| Internet[Internet: RPC Endpoints]
+```
+
 ## Features
 
 - **Scalable**: Auto-scaling based on CPU and memory utilization
@@ -56,6 +57,37 @@ graph TD
 - **Secure**: Private subnets, security groups, and encrypted storage
 - **Resilient**: Multi-AZ deployment with automatic failover
 - **Monitored**: CloudWatch metrics and logs
+
+## Performance Optimizations
+
+This module includes several performance optimizations:
+
+1. **Connection Pooling**: Reduces database connection overhead
+2. **Query Caching**: Caches frequent GraphQL queries in Redis
+3. **Response Compression**: Reduces bandwidth usage
+4. **Graviton Processors**: ARM-based instances for better price/performance
+5. **Auto-scaling**: Dynamically adjusts capacity based on load
+
+## Project Components
+
+### 1. Example Implementation
+Located in `/example-squid/`, this reference implementation indexes USDC token transfers on Ethereum mainnet, demonstrating:
+- Integration with Redis caching and PostgreSQL
+- Docker-based deployment configuration
+- GraphQL API implementation
+- Prometheus metrics integration
+
+[View Example Documentation](/example-squid/README.md)
+
+### 2. Cost Analysis Tools
+Located in `/cost/`, these tools help analyze and optimize infrastructure costs:
+- Cost analysis script for deployment estimation
+- Usage scenario configurations (high/low)
+- Historical cost reports
+
+### 3. Infrastructure Module
+
+
 
 ## Usage
 
@@ -162,45 +194,6 @@ The following tables provide estimated monthly costs for different traffic level
 
 *Note: These estimates are based on AWS us-east-1 region pricing as of 2023. Actual costs may vary based on specific usage patterns, data transfer, and other factors.*
 
-## Security Architecture
-
-```mermaid
-graph TD
-    subgraph "Security Groups"
-        SG_ALB[ALB Security Group]
-        SG_ECS[ECS Security Group]
-        SG_DB[Database Security Group]
-        SG_Cache[Cache Security Group]
-        SG_EFS[EFS Security Group]
-    end
-    
-    SG_ALB -->|Allows| Internet[Internet: Port 443]
-    SG_ALB -->|Connects to| SG_ECS
-    SG_ECS -->|Connects to| SG_DB
-    SG_ECS -->|Connects to| SG_Cache
-    SG_ECS -->|Connects to| SG_EFS
-    SG_ECS -->|Connects to| Internet[Internet: RPC Endpoints]
-```
-
-## Official Subsquid Images
-
-You can use these official Subsquid images:
-
-- `subsquid/node:latest` - Base image for running Subsquid nodes
-- `subsquid/graphql-server:latest` - GraphQL API server component
-- `subsquid/substrate-processor:latest` - For Substrate-based blockchains
-- `subsquid/evm-processor:latest` - For Ethereum-based blockchains
-- `subsquid/near-processor:latest` - For NEAR Protocol
-
-## Performance Optimizations
-
-This module includes several performance optimizations:
-
-1. **Connection Pooling**: Reduces database connection overhead
-2. **Query Caching**: Caches frequent GraphQL queries in Redis
-3. **Response Compression**: Reduces bandwidth usage
-4. **Graviton Processors**: ARM-based instances for better price/performance
-5. **Auto-scaling**: Dynamically adjusts capacity based on load
 
 ## Inputs
 
