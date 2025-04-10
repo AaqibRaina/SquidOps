@@ -83,16 +83,8 @@ locals {
   # Redis configuration
   redis_environment = local.effective_config.enable_caching ? [
     {
-      name  = "REDIS_HOST"
-      value = aws_elasticache_replication_group.subsquid[0].primary_endpoint_address
-    },
-    {
-      name  = "REDIS_PORT"
-      value = "6379"
-    },
-    {
-      name  = "REDIS_PASSWORD"
-      value = random_password.redis_auth_token[0].result
+      name  = "REDIS_URL"
+      value = "redis://:${urlencode(random_password.redis_auth_token[0].result)}@${aws_elasticache_replication_group.subsquid[0].primary_endpoint_address}:6379"
     }
   ] : []
   
@@ -374,4 +366,4 @@ resource "random_password" "redis_auth_token" {
   count            = local.effective_config.enable_caching ? 1 : 0
   length           = 32
   special          = false
-} 
+}
