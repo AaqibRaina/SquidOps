@@ -1,4 +1,4 @@
 locals {
-    account_id       = "140023409102"
+    account_id       = "123456789"
     region           = "us-east-1"
 }
