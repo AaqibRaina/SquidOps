@@ -25,9 +25,18 @@ resource "aws_ecs_task_definition" "subsquid" {
   container_definitions = jsonencode([
     merge(local.container_definition, {
       command = var.container_command != null ? var.container_command : null,
-      image_hash = md5(var.subsquid_image)
+      image_hash = md5(var.subsquid_image),
+      environment = [for env in local.combined_environment : {
+        name = env.name
+        value = sensitive(env.value)
+      }]
     })
   ])
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture       = local.effective_config.use_graviton ? "ARM64" : "X86_64"
+  }
   
   volume {
     name = "subsquid-data"
@@ -70,7 +79,7 @@ resource "aws_ecs_service" "subsquid" {
     content {
       target_group_arn = aws_lb_target_group.subsquid[0].arn
       container_name   = "subsquid"
-      container_port   = 4350
+      container_port   = var.graphql_port
     }
   }
   

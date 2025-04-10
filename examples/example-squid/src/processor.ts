@@ -9,12 +9,20 @@ import {
 import {Store} from '@subsquid/typeorm-store'
 import * as erc20 from './abi/erc20'
 
-export const CONTRACT_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+if (!process.env.CHAIN_RPC) {
+    throw new Error('CHAIN_RPC environment variable is not set')
+}
+
+if (!process.env.CONTRACT_ADDRESS) {
+    throw new Error('CONTRACT_ADDRESS environment variable is not set')
+}
+
+export const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
 
 export const processor = new EvmBatchProcessor()
     .setGateway('https://v2.archive.subsquid.io/network/ethereum-mainnet')
     .setRpcEndpoint({
-        url: 'https://eth-mainnet.public.blastapi.io',
+        url: process.env.CHAIN_RPC,
         rateLimit: 10
     })
     .setFinalityConfirmation(75)

@@ -1,4 +1,3 @@
-
 FROM node:18-alpine as builder
 
 # Add labels for better management
@@ -34,7 +33,7 @@ RUN npm ci --production
 
 # Copy built application
 COPY --from=builder /squid/lib ./lib
-COPY --from=builder /squid/abi ./abi
+COPY --from=builder /squid/src/abi ./abi
 COPY --from=builder /squid/db ./db
 COPY --from=builder /squid/schema.graphql ./schema.graphql
 COPY --from=builder /squid/commands.json ./commands.json
